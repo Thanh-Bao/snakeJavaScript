@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+</head>
+
+<body>
+
+  <canvas id="canvas" width="400" height="400"></canvas>
+
+
+  <script>
+
+    var canvas, contextOfCanvas;
+
+    window.onload = function () {
+      canvas = document.getElementById("canvas");
+      contextOfCanvas = canvas.getContext("2d");
+
+      document.addEventListener("keydown", keyDownEvent);
+
+      var x = 8;
+      // thời gian render lại màn hình sau 1000 mili giây / x
+      setInterval(draw, 1000 / x);
+    };
+
+    // game world
+    var kichThuoc1Block = 20; // mỗi ô 20px, mỗi hàng-cột có 20 ô => 20 ô x 20px = cạnh 400px 
+    var nextX = nextY = 0; // rắn đứng yên ban đầu
+
+
+    // snake     
+    var kichThuocRan = 3;
+    // random tọa độ ban đầu của rắn
+    var snakeX = myRandomINT();
+    var snakeY = myRandomINT();
+    var arraySnake = [];
+
+    // random tọa độ ban đầu apple
+    var appleX = myRandomINT();
+    var appleY = myRandomINT();
+
+
+    function draw() {
+      // set hướng di chuyển kế tiếp
+      snakeX += nextX;
+      snakeY += nextY;
+
+      veBackground();
+      veApple();
+      veSnake();
+      eatApple();
+      setToaDoKhiChamManHinh();
+
+    }
+
+    // bắt sự kiện bàn phím
+    function keyDownEvent(e) {
+      switch (e.keyCode) {
+        case 37: case 65:
+          nextX = -1;
+          nextY = 0;
+          break;
+        case 38: case 87:
+          nextX = 0;
+          nextY = -1;
+          break;
+        case 39: case 68:
+          nextX = 1;
+          nextY = 0;
+          break;
+        case 40: case 83:
+          nextX = 0;
+          nextY = 1;
+          break;
+      }
+    }
+
+
+    function myRandomINT() {
+      return Math.floor(Math.random() * 17);
+    }
+
+
+    function setToaDoKhiChamManHinh() {
+      if (snakeX < 0) {
+        snakeX = 20;
+      }
+      if (snakeX > 20) {
+        snakeX = -1;
+      }
+
+      if (snakeY < 0) {
+        snakeY = 20;
+      }
+      if (snakeY > 20) {
+        snakeY = -1;
+      }
+    }
+
+
+    function veBackground() {
+      contextOfCanvas.fillStyle = "black";
+      contextOfCanvas.fillRect(0, 0, kichThuoc1Block * 20, kichThuoc1Block * 20);
+    }
+
+    function veApple() {
+      contextOfCanvas.fillStyle = "red";
+      contextOfCanvas.fillRect(appleX * kichThuoc1Block, appleY * kichThuoc1Block, kichThuoc1Block, kichThuoc1Block);
+    }
+
+    function eatApple() {
+      if (snakeX == appleX && snakeY == appleY) {
+        kichThuocRan++;
+        appleX = myRandomINT();
+        appleY = myRandomINT();
+      }
+    }
+
+    function veSnake() {
+      contextOfCanvas.fillStyle = "lime";
+      for (var i = 0; i < arraySnake.length; i++) {
+        contextOfCanvas.fillRect(
+          arraySnake[i].x * kichThuoc1Block,
+          arraySnake[i].y * kichThuoc1Block,
+          kichThuoc1Block,
+          kichThuoc1Block
+        );
+      }
+      //lấy các danh sách tọa độ lưu vào CUỐI mảng
+      arraySnake.push({ x: snakeX, y: snakeY });
+
+      // xóa tọa độ ở ĐẦU mảng 
+      while (arraySnake.length > kichThuocRan) {
+        arraySnake.shift();
+      }
+    }
+
+
+  </script>
+</body>
+
+</html>
